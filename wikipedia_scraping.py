@@ -1,16 +1,16 @@
-# Step 4: Import required libraries
+# Import required libraries
 import requests
 import re
 import sqlite3
 from bs4 import BeautifulSoup
 
-# Step 5: Connect to the movies.db database
+# Connect to the movies.db database
 connection = sqlite3.connect('movies.db')
 
-# Step 6: Create a cursor object
+# Create a cursor object
 cursor = connection.cursor()
 
-# Step 7: Drop the movies table if it already exists
+# Drop the movies table if it already exists
 cursor.execute('''DROP TABLE IF EXISTS movies;''')
 
 # Step 8: Create the movies table
@@ -23,7 +23,7 @@ cursor.execute('''
     );
 ''')
 
-# Step 9: Define the scraping function
+# Define the scraping function
 def scrape_wikipedia():
     url = "https://en.wikipedia.org/wiki/List_of_highest-grossing_films"
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -81,7 +81,7 @@ def scrape_wikipedia():
 
     return movie_list
 
-# Step 10: Scrape and insert movies into the database
+# Scrape and insert movies into the database
 data = scrape_wikipedia()
 for movie in data:
     cursor.execute('''
@@ -89,14 +89,14 @@ for movie in data:
         VALUES (?, ?, ?);
     ''', (movie['Title'], movie['Worldwide gross'], movie['Year']))
 
-# Step 11: Commit changes
+# Commit changes
 connection.commit()
 
-# Step 12: Output the contents of the table
+# Output the contents of the table
 movie_table = cursor.execute('SELECT * FROM movies;')
 for movie in movie_table:
     print(movie)
     # Example: (1, 'Avatar', 2923706026, 2009)
 
-# Step 13: Close the connection
+# Close the connection
 connection.close()
