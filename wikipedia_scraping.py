@@ -23,6 +23,7 @@ cursor.execute('''
     );
 ''')
 
+# Step 9: Define the scraping function
 def scrape_wikipedia():
     url = "https://en.wikipedia.org/wiki/List_of_highest-grossing_films"
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -40,7 +41,7 @@ def scrape_wikipedia():
     target_table = None
     for table in tables:
         caption = table.find("caption")
-        if caption and "highest-grossing films" in caption.get_text(strip=True).lower():
+        if caption and "Highest-grossing films" in caption.get_text(strip=True).lower():
             target_table = table
             break
     if not target_table and tables:
@@ -71,8 +72,8 @@ def scrape_wikipedia():
                 gross_int = int(gross_clean)
                 year_int = int(year)
                 movie_list.append({
-                    "title": title,
-                    "worldwide_gross": gross_int,
+                    "Title": title,
+                    "Worldwide gross": gross_int,
                     "Year": year_int
                 })
             except ValueError:
@@ -80,14 +81,22 @@ def scrape_wikipedia():
 
     return movie_list
 
-# Step 9: Scrape and insert movies into the database
-movies = scrape_wikipedia()
-for movie in movies:
+# Step 10: Scrape and insert movies into the database
+data = scrape_wikipedia()
+for movie in data:
     cursor.execute('''
-        INSERT INTO movies (title, worldwide_gross, year)
+        INSERT INTO movies (Title, Worldwide gross, Year)
         VALUES (?, ?, ?);
-    ''', (movie['title'], movie['worldwide_gross'], movie['Year']))
+    ''', (movie['Title'], movie['Worldwide gross'], movie['Year']))
 
-# Final step: Commit the changes
+# Step 11: Commit changes
 connection.commit()
+
+# Step 12: Output the contents of the table
+movie_table = cursor.execute('SELECT * FROM movies;')
+for movie in movie_table:
+    print(movie)
+    # Example: (1, 'Avatar', 2923706026, 2009)
+
+# Step 13: Close the connection
 connection.close()
